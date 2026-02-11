@@ -1,3 +1,5 @@
+"use client";
+
 import { formatDate } from "@/lib/meal-utils";
 import { UserMenu } from "./user-menu";
 
