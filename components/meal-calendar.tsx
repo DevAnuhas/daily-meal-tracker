@@ -98,7 +98,7 @@ export function MealCalendar() {
 					[field]: value,
 				},
 				{
-					onConflict: "date",
+					onConflict: "user_id,date",
 				}
 			);
 
