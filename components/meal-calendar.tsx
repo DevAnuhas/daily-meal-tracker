@@ -68,7 +68,7 @@ export function MealCalendar() {
 			const existing = prev.find((m) => m.date === date);
 			if (existing) {
 				return prev.map((m) =>
-					m.date === date ? { ...m, [field]: value } : m
+					m.date === date ? { ...m, [field]: value } : m,
 				);
 			} else {
 				const newMeal: Meal = {
@@ -85,7 +85,7 @@ export function MealCalendar() {
 					updated_at: new Date().toISOString(),
 				};
 				return [newMeal, ...prev].sort(
-					(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+					(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
 				);
 			}
 		});
@@ -99,7 +99,7 @@ export function MealCalendar() {
 				},
 				{
 					onConflict: "user_id,date",
-				}
+				},
 			);
 
 			if (error) {
@@ -157,33 +157,31 @@ export function MealCalendar() {
 	if (loading) {
 		return (
 			<div className="min-h-screen bg-background">
-				<div className="container mx-auto px-4 py-8">
-					<div className="space-y-6">
-						<div className="flex items-center gap-4">
-							<Button variant="outline" size="icon" disabled>
-								<ArrowLeft className="h-4 w-4" />
-							</Button>
-							<h1 className="text-2xl font-bold">Daily Meal Entry</h1>
-						</div>
-						<div className="grid gap-4">
-							{[...Array(5)].map((_, i) => (
-								<Card key={i}>
-									<CardHeader>
-										<div className="h-6 bg-muted rounded w-32 animate-pulse" />
-									</CardHeader>
-									<CardContent>
-										<div className="space-y-2">
-											{[...Array(3)].map((_, j) => (
-												<div
-													key={j}
-													className="h-6 bg-muted rounded animate-pulse"
-												/>
-											))}
-										</div>
-									</CardContent>
-								</Card>
-							))}
-						</div>
+				<div className="space-y-6">
+					<div className="flex items-center gap-4">
+						<Button variant="outline" size="icon" disabled>
+							<ArrowLeft className="h-4 w-4" />
+						</Button>
+						<h1 className="text-2xl font-bold">Daily Meal Entry</h1>
+					</div>
+					<div className="grid gap-4">
+						{[...Array(5)].map((_, i) => (
+							<Card key={i}>
+								<CardHeader>
+									<div className="h-6 bg-muted rounded w-32 animate-pulse" />
+								</CardHeader>
+								<CardContent>
+									<div className="space-y-2">
+										{[...Array(3)].map((_, j) => (
+											<div
+												key={j}
+												className="h-6 bg-muted rounded animate-pulse"
+											/>
+										))}
+									</div>
+								</CardContent>
+							</Card>
+						))}
 					</div>
 				</div>
 			</div>
@@ -192,128 +190,126 @@ export function MealCalendar() {
 
 	return (
 		<div className="min-h-screen bg-background">
-			<div className="container mx-auto px-4 py-8">
-				<div className="space-y-6">
-					{/* Header */}
-					<div className="flex items-center gap-4">
-						<Button
-							variant="outline"
-							size="icon"
-							onClick={() => router.push("/")}
-						>
-							<ArrowLeft className="h-4 w-4" />
-						</Button>
-						<h1 className="text-2xl font-bold">Daily Meal Entry</h1>
-					</div>
+			<div className="space-y-6">
+				{/* Header */}
+				<div className="flex items-center gap-4">
+					<Button
+						variant="outline"
+						size="icon"
+						onClick={() => router.push("/")}
+					>
+						<ArrowLeft className="h-4 w-4" />
+					</Button>
+					<h1 className="text-2xl font-bold">Daily Meal Entry</h1>
+				</div>
 
-					{/* Calendar Grid */}
-					<div className="grid gap-4">
-						{dates.map((date) => {
-							const meal = meals.find((m) => m.date === date);
-							const mealCount = meal ? getMealCountForDate(meal) : 0;
+				{/* Calendar Grid */}
+				<div className="grid gap-4">
+					{dates.map((date) => {
+						const meal = meals.find((m) => m.date === date);
+						const mealCount = meal ? getMealCountForDate(meal) : 0;
 
-							return (
-								<Card
-									key={date}
-									className="transition-all duration-200 hover:shadow-md"
-								>
-									<CardHeader className="pb-3">
-										<div className="flex justify-between items-center">
-											<CardTitle className="text-lg">
-												{formatDate(date)}
-											</CardTitle>
-											<Badge variant={mealCount > 0 ? "default" : "secondary"}>
-												{mealCount} meal{mealCount !== 1 ? "s" : ""}
-											</Badge>
+						return (
+							<Card
+								key={date}
+								className="transition-all duration-200 hover:shadow-md"
+							>
+								<CardHeader className="pb-3">
+									<div className="flex justify-between items-center">
+										<CardTitle className="text-lg">
+											{formatDate(date)}
+										</CardTitle>
+										<Badge variant={mealCount > 0 ? "default" : "secondary"}>
+											{mealCount} meal{mealCount !== 1 ? "s" : ""}
+										</Badge>
+									</div>
+								</CardHeader>
+								<CardContent>
+									<div className="space-y-3">
+										{/* Breakfast */}
+										<div className="flex items-center justify-between">
+											<div className="flex items-center space-x-2">
+												<Checkbox
+													id={`${date}-breakfast`}
+													checked={meal?.breakfast || false}
+													onCheckedChange={(checked) =>
+														updateMeal(date, "breakfast", checked as boolean)
+													}
+												/>
+												<label
+													htmlFor={`${date}-breakfast`}
+													className="text-sm font-medium"
+												>
+													Breakfast
+												</label>
+											</div>
+											{meal?.breakfast && (
+												<Badge
+													variant={
+														meal.breakfast_paid ? "default" : "secondary"
+													}
+												>
+													{meal.breakfast_paid ? "Paid" : "Unpaid"}
+												</Badge>
+											)}
 										</div>
-									</CardHeader>
-									<CardContent>
-										<div className="space-y-3">
-											{/* Breakfast */}
-											<div className="flex items-center justify-between">
-												<div className="flex items-center space-x-2">
-													<Checkbox
-														id={`${date}-breakfast`}
-														checked={meal?.breakfast || false}
-														onCheckedChange={(checked) =>
-															updateMeal(date, "breakfast", checked as boolean)
-														}
-													/>
-													<label
-														htmlFor={`${date}-breakfast`}
-														className="text-sm font-medium"
-													>
-														Breakfast
-													</label>
-												</div>
-												{meal?.breakfast && (
-													<Badge
-														variant={
-															meal.breakfast_paid ? "default" : "secondary"
-														}
-													>
-														{meal.breakfast_paid ? "Paid" : "Unpaid"}
-													</Badge>
-												)}
-											</div>
 
-											{/* Lunch */}
-											<div className="flex items-center justify-between">
-												<div className="flex items-center space-x-2">
-													<Checkbox
-														id={`${date}-lunch`}
-														checked={meal?.lunch || false}
-														onCheckedChange={(checked) =>
-															updateMeal(date, "lunch", checked as boolean)
-														}
-													/>
-													<label
-														htmlFor={`${date}-lunch`}
-														className="text-sm font-medium"
-													>
-														Lunch
-													</label>
-												</div>
-												{meal?.lunch && (
-													<Badge
-														variant={meal.lunch_paid ? "default" : "secondary"}
-													>
-														{meal.lunch_paid ? "Paid" : "Unpaid"}
-													</Badge>
-												)}
+										{/* Lunch */}
+										<div className="flex items-center justify-between">
+											<div className="flex items-center space-x-2">
+												<Checkbox
+													id={`${date}-lunch`}
+													checked={meal?.lunch || false}
+													onCheckedChange={(checked) =>
+														updateMeal(date, "lunch", checked as boolean)
+													}
+												/>
+												<label
+													htmlFor={`${date}-lunch`}
+													className="text-sm font-medium"
+												>
+													Lunch
+												</label>
 											</div>
-
-											{/* Dinner */}
-											<div className="flex items-center justify-between">
-												<div className="flex items-center space-x-2">
-													<Checkbox
-														id={`${date}-dinner`}
-														checked={meal?.dinner || false}
-														onCheckedChange={(checked) =>
-															updateMeal(date, "dinner", checked as boolean)
-														}
-													/>
-													<label
-														htmlFor={`${date}-dinner`}
-														className="text-sm font-medium"
-													>
-														Dinner
-													</label>
-												</div>
-												{meal?.dinner && (
-													<Badge
-														variant={meal.dinner_paid ? "default" : "secondary"}
-													>
-														{meal.dinner_paid ? "Paid" : "Unpaid"}
-													</Badge>
-												)}
-											</div>
+											{meal?.lunch && (
+												<Badge
+													variant={meal.lunch_paid ? "default" : "secondary"}
+												>
+													{meal.lunch_paid ? "Paid" : "Unpaid"}
+												</Badge>
+											)}
 										</div>
-									</CardContent>
-								</Card>
-							);
-						})}
-					</div>
+
+										{/* Dinner */}
+										<div className="flex items-center justify-between">
+											<div className="flex items-center space-x-2">
+												<Checkbox
+													id={`${date}-dinner`}
+													checked={meal?.dinner || false}
+													onCheckedChange={(checked) =>
+														updateMeal(date, "dinner", checked as boolean)
+													}
+												/>
+												<label
+													htmlFor={`${date}-dinner`}
+													className="text-sm font-medium"
+												>
+													Dinner
+												</label>
+											</div>
+											{meal?.dinner && (
+												<Badge
+													variant={meal.dinner_paid ? "default" : "secondary"}
+												>
+													{meal.dinner_paid ? "Paid" : "Unpaid"}
+												</Badge>
+											)}
+										</div>
+									</div>
+								</CardContent>
+							</Card>
+						);
+					})}
 				</div>
 			</div>
 		</div>
