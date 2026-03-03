@@ -22,7 +22,6 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { Meal } from "@/lib/supabase-client";
 import {
-	formatDate,
 	getMealCountForDate,
 	formatCurrency,
 	calculateMealStats,
@@ -117,12 +116,12 @@ export function ReportGenerator({
 			const reportContent = generateTextReport(
 				filteredMeals,
 				startDateStr,
-				endDateStr
+				endDateStr,
 			);
 
 			const success = forceDownload(
 				reportContent,
-				`meal-report-${startDateStr}-to-${endDateStr}.txt`
+				`meal-report-${startDateStr}-to-${endDateStr}.txt`,
 			);
 
 			if (success) {
@@ -150,18 +149,24 @@ export function ReportGenerator({
 		}
 	}
 
+	function formatDate(date: string) {
+		return new Date(date).toLocaleDateString("en-IN", {
+			day: "numeric",
+			month: "short",
+			year: "numeric",
+		});
+	}
+
 	function generateTextReport(
 		filteredMeals: Meal[],
 		start: string,
-		end: string
+		end: string,
 	): string {
 		const stats = calculateMealStats(filteredMeals);
 
 		let reportContent = `DAILY MEAL TRACKER REPORT\n`;
 		reportContent += `================================\n\n`;
-		reportContent += `Report Period: ${formatDate(start)} to ${formatDate(
-			end
-		)}\n`;
+		reportContent += `Report Period: ${formatDate(start)} to ${formatDate(end)}\n`;
 		reportContent += `Generated on: ${new Date().toLocaleString()}\n\n`;
 
 		reportContent += `SUMMARY\n`;
@@ -175,7 +180,7 @@ export function ReportGenerator({
 		reportContent += `----\t\t-----\t---------\t-----\t------\n`;
 
 		const sortedMeals = [...filteredMeals].sort(
-			(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+			(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
 		);
 
 		sortedMeals.forEach((meal) => {
@@ -187,7 +192,7 @@ export function ReportGenerator({
 			const dinner = meal.dinner ? "Y" : "N";
 
 			reportContent += `${formatDate(
-				meal.date
+				meal.date,
 			)}\t${totalMeals}\t${breakfast}\t\t${lunch}\t${dinner}\n`;
 		});
 
@@ -214,15 +219,13 @@ export function ReportGenerator({
 										variant={"outline"}
 										className={cn(
 											"w-full justify-start text-left font-normal",
-											!startDate && "text-muted-foreground"
+											!startDate && "text-muted-foreground",
 										)}
 									>
 										<CalendarIcon className="mr-2 h-4 w-4" />
-										{startDate ? (
+										{startDate ?
 											format(startDate, "PPP")
-										) : (
-											<span>Pick a date</span>
-										)}
+										:	<span>Pick a date</span>}
 									</Button>
 								</PopoverTrigger>
 								<PopoverContent className="w-auto p-0">
@@ -245,15 +248,13 @@ export function ReportGenerator({
 										variant={"outline"}
 										className={cn(
 											"w-full justify-start text-left font-normal",
-											!endDate && "text-muted-foreground"
+											!endDate && "text-muted-foreground",
 										)}
 									>
 										<CalendarIcon className="mr-2 h-4 w-4" />
-										{endDate ? (
+										{endDate ?
 											format(endDate, "PPP")
-										) : (
-											<span>Pick a date</span>
-										)}
+										:	<span>Pick a date</span>}
 									</Button>
 								</PopoverTrigger>
 								<PopoverContent className="w-auto p-0">

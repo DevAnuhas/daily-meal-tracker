@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Download, FileText } from "lucide-react";
 import type { Meal } from "@/lib/supabase-client";
 import {
-	formatDate,
 	getMealCountForDate,
 	formatCurrency,
 	calculateMealStats,
@@ -20,6 +19,14 @@ interface QuickReportsProps {
 export function QuickReports({ meals }: QuickReportsProps) {
 	const [generating, setGenerating] = useState<string | null>(null);
 	const { toast } = useToast();
+
+	function formatDate(date: string) {
+		return new Date(date).toLocaleDateString("en-IN", {
+			day: "numeric",
+			month: "short",
+			year: "numeric",
+		});
+	}
 
 	function forceDownload(content: string, filename: string) {
 		try {
@@ -74,7 +81,7 @@ export function QuickReports({ meals }: QuickReportsProps) {
 
 			const stats = calculateMealStats(unpaidMeals);
 			const sortedMeals = [...unpaidMeals].sort(
-				(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+				(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
 			);
 
 			let reportContent = `UNPAID MEALS REPORT\n`;
@@ -96,14 +103,17 @@ export function QuickReports({ meals }: QuickReportsProps) {
 				if (totalMeals === 0) return; // Skip entries with 0 meals
 
 				const b =
-					meal.breakfast && !meal.breakfast_paid
-						? "Y"
-						: meal.breakfast
-						? "-"
-						: "N";
-				const l = meal.lunch && !meal.lunch_paid ? "Y" : meal.lunch ? "-" : "N";
+					meal.breakfast && !meal.breakfast_paid ? "Y"
+					: meal.breakfast ? "-"
+					: "N";
+				const l =
+					meal.lunch && !meal.lunch_paid ? "Y"
+					: meal.lunch ? "-"
+					: "N";
 				const d =
-					meal.dinner && !meal.dinner_paid ? "Y" : meal.dinner ? "-" : "N";
+					meal.dinner && !meal.dinner_paid ? "Y"
+					: meal.dinner ? "-"
+					: "N";
 
 				const unpaidCount =
 					(meal.breakfast && !meal.breakfast_paid ? 1 : 0) +
@@ -112,7 +122,7 @@ export function QuickReports({ meals }: QuickReportsProps) {
 
 				if (unpaidCount > 0) {
 					reportContent += `${formatDate(
-						meal.date
+						meal.date,
 					)}\t${unpaidCount}\t${b}\t\t${l}\t${d}\n`;
 				}
 			});
@@ -175,7 +185,7 @@ export function QuickReports({ meals }: QuickReportsProps) {
 
 			const stats = calculateMealStats(paidMeals);
 			const sortedMeals = [...paidMeals].sort(
-				(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+				(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
 			);
 
 			let reportContent = `PAID MEALS REPORT\n`;
@@ -204,7 +214,7 @@ export function QuickReports({ meals }: QuickReportsProps) {
 
 				if (paidCount > 0) {
 					reportContent += `${formatDate(
-						meal.date
+						meal.date,
 					)}\t${paidCount}\t${b}\t\t${l}\t${d}\n`;
 				}
 			});
